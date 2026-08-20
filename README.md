@@ -21,10 +21,41 @@ Docker 기반으로 프론트엔드, 백엔드, AI 챗봇, 데이터베이스를
 ## 빠른 시작
 
 ```bash
-git clone <repository-url>
-cd oliveyoung-clone
+git clone https://github.com/hy-cj-ai-cloud-bootcamp/oliveyoung-clone-template.git
+cd oliveyoung-clone-template
 cp .env.example .env
 docker-compose up --build
+```
+
+### 내 GitHub 레포로 연결하기
+
+원본 템플릿 레포는 수업 자료이므로 직접 수정하지 않습니다. 과제 제출이나 팀 프로젝트 작업은 본인 또는 팀 GitHub 레포를 새로 만든 뒤 그 레포로 push합니다.
+
+1. GitHub에서 빈 레포를 새로 생성합니다.
+   - 예: `my-oliveyoung-project`
+   - README, `.gitignore`, license는 생성하지 않는 것을 권장합니다.
+2. 원본 레포를 `upstream`으로 이름 변경합니다.
+   ```bash
+   git remote rename origin upstream
+   ```
+3. 내 GitHub 레포를 새 `origin`으로 연결합니다.
+   ```bash
+   git remote add origin https://github.com/<내-GitHub-아이디>/<내-레포명>.git
+   ```
+4. 내 레포로 push합니다.
+   ```bash
+   git push -u origin main
+   ```
+5. remote 연결 상태를 확인합니다.
+   ```bash
+   git remote -v
+   ```
+
+정상이라면 `origin`은 내 레포, `upstream`은 수업 원본 레포를 가리킵니다.
+
+```text
+origin    https://github.com/<내-GitHub-아이디>/<내-레포명>.git
+upstream  https://github.com/hy-cj-ai-cloud-bootcamp/oliveyoung-clone-template.git
 ```
 
 ### 접속 URL
