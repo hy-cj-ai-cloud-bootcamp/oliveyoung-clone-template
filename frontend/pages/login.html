@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 올리브영</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <a href="/" class="logo"><img src="https://static.oliveyoung.co.kr/pc-static-root/image/comm/h1_logo.png?ver=2" alt="올리브영" height="28"></a>
+            <div class="header-search">
+                <input type="text" placeholder="상품을 검색해보세요">
+            </div>
+            <div class="header-icons">
+                <div class="auth-buttons" id="auth-buttons">
+                    <a href="/pages/login.html" class="btn btn-outline">로그인</a>
+                    <a href="/pages/register.html" class="btn btn-primary">회원가입</a>
+                </div>
+                <div class="user-menu" id="user-menu" style="display:none;">
+                    <span id="user-name" style="font-size:13px;color:#333;"></span>
+                    <a href="/pages/cart.html" style="font-size:13px;">장바구니<span id="cart-count" class="badge">0</span></a>
+                    <a href="/pages/orders.html" style="font-size:13px;">주문내역</a>
+                    <button class="btn btn-outline" onclick="logout()">로그아웃</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <nav class="category-nav">
+        <div class="category-nav-inner">
+            <a href="/pages/products.html">전체</a>
+            <a href="/pages/products.html?category=1">스킨케어</a>
+            <a href="/pages/products.html?category=2">메이크업</a>
+            <a href="/pages/products.html?category=3">헤어/바디</a>
+            <a href="/pages/products.html?category=4">향수</a>
+            <a href="/pages/products.html?category=5">건강식품</a>
+            <a href="/pages/products.html?category=6">남성</a>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <h2>로그인</h2>
+        <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="email" id="email" placeholder="이메일을 입력하세요" required>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" placeholder="비밀번호를 입력하세요" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:12px;">로그인</button>
+        </form>
+        <p style="text-align:center;margin-top:20px;font-size:13px;color:#999;">
+            계정이 없으신가요? <a href="/pages/register.html" style="color:#9bce26;font-weight:500;">회원가입</a>
+        </p>
+    </div>
+
+    <footer class="footer">
+        <p>CJ올리브영 | CJ AI 클라우드 엔지니어 부트캠프 실습 프로젝트</p>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const data = await api.post('/api/auth/login', { email, password });
+                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('username', data.username);
+                alert(`${data.username}님 환영합니다!`);
+                window.location.href = '/';
+            } catch (e) {
+                alert(e.detail || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장바구니 - 올리브영</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <a href="/" class="logo"><img src="https://static.oliveyoung.co.kr/pc-static-root/image/comm/h1_logo.png?ver=2" alt="올리브영" height="28"></a>
+            <div class="header-search">
+                <input type="text" placeholder="상품을 검색해보세요">
+            </div>
+            <div class="header-icons">
+                <div class="auth-buttons" id="auth-buttons">
+                    <a href="/pages/login.html" class="btn btn-outline">로그인</a>
+                    <a href="/pages/register.html" class="btn btn-primary">회원가입</a>
+                </div>
+                <div class="user-menu" id="user-menu" style="display:none;">
+                    <span id="user-name" style="font-size:13px;color:#333;"></span>
+                    <a href="/pages/cart.html" style="font-size:13px;">장바구니<span id="cart-count" class="badge">0</span></a>
+                    <a href="/pages/orders.html" style="font-size:13px;">주문내역</a>
+                    <button class="btn btn-outline" onclick="logout()">로그아웃</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <nav class="category-nav">
+        <div class="category-nav-inner">
+            <a href="/pages/products.html">전체</a>
+            <a href="/pages/products.html?category=1">스킨케어</a>
+            <a href="/pages/products.html?category=2">메이크업</a>
+            <a href="/pages/products.html?category=3">헤어/바디</a>
+            <a href="/pages/products.html?category=4">향수</a>
+            <a href="/pages/products.html?category=5">건강식품</a>
+            <a href="/pages/products.html?category=6">남성</a>
+        </div>
+    </nav>
+
+    <div class="cart-section">
+        <h2>장바구니</h2>
+        <div id="cart-items">
+            <!-- 장바구니 아이템이 여기에 렌더링됩니다 -->
+        </div>
+        <div class="cart-summary" id="cart-summary" style="display:none;">
+            <div class="cart-total" id="cart-total-price">총 합계: 0원</div>
+            <button class="btn btn-primary btn-lg" onclick="placeOrder()" style="width:100%;">주문하기</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>CJ올리브영 | CJ AI 클라우드 엔지니어 부트캠프 실습 프로젝트</p>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            if (requireAuth()) {
+                loadCart();
+            }
+        });
+
+        async function loadCart() {
+            try {
+                const items = await api.get('/api/cart');
+                renderCart(items);
+            } catch (e) {
+                document.getElementById('cart-items').innerHTML = '<p style="color:#999;text-align:center;padding:40px;">장바구니를 불러올 수 없습니다.</p>';
+            }
+        }
+
+        function renderCart(items) {
+            const container = document.getElementById('cart-items');
+            const summary = document.getElementById('cart-summary');
+
+            if (items.length === 0) {
+                container.innerHTML = '<p style="color:#999;text-align:center;padding:40px;">장바구니가 비어있습니다.</p>';
+                summary.style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        <img src="${item.product.image_url || ''}" alt="${item.product.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.product.name}</div>
+                        <div class="cart-item-price">${formatPrice(item.product.price)}</div>
+                    </div>
+                    <div class="quantity-control">
+                        <button onclick="changeCartQuantity(${item.id}, ${item.quantity - 1})">−</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="changeCartQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                    </div>
+                    <button class="btn-danger" onclick="removeCartItem(${item.id})">삭제</button>
+                </div>
+            `).join('');
+
+            const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+            document.getElementById('cart-total-price').textContent = `총 합계: ${formatPrice(total)}`;
+            summary.style.display = 'block';
+        }
+
+        async function changeCartQuantity(cartId, newQuantity) {
+            if (newQuantity < 1) {
+                removeCartItem(cartId);
+                return;
+            }
+            try {
+                await api.put(`/api/cart/${cartId}`, { quantity: newQuantity });
+                loadCart();
+                updateCartCount();
+            } catch (e) {
+                alert('수량 변경 실패');
+            }
+        }
+
+        async function removeCartItem(cartId) {
+            if (!confirm('삭제하시겠습니까?')) return;
+            try {
+                await api.delete(`/api/cart/${cartId}`);
+                loadCart();
+                updateCartCount();
+            } catch (e) {
+                alert('삭제 실패');
+            }
+        }
+
+        async function placeOrder() {
+            if (!confirm('주문하시겠습니까?')) return;
+            try {
+                await api.post('/api/orders', {});
+                alert('주문이 완료되었습니다!');
+                updateCartCount();
+                window.location.href = '/pages/orders.html';
+            } catch (e) {
+                alert(e.detail || '주문 실패');
+            }
+        }
+    </script>
+</body>
+</html>
