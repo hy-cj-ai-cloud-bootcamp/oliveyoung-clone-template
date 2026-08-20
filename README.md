@@ -31,6 +31,23 @@ docker-compose up --build
 
 원본 템플릿 레포는 수업 자료이므로 직접 수정하지 않습니다. 과제 제출이나 팀 프로젝트 작업은 본인 또는 팀 GitHub 레포를 새로 만든 뒤 그 레포로 push합니다.
 
+가장 쉬운 방법은 GitHub의 `Use this template` 버튼을 사용하는 것입니다.
+
+1. 원본 템플릿 레포에 접속합니다.
+   - https://github.com/hy-cj-ai-cloud-bootcamp/oliveyoung-clone-template
+2. 오른쪽 위의 `Use this template` 버튼을 클릭합니다.
+3. 본인 또는 팀 계정에 새 레포를 생성합니다.
+   - 예: `my-oliveyoung-project`
+4. 생성된 내 레포를 clone해서 작업합니다.
+   ```bash
+   git clone https://github.com/<내-GitHub-아이디>/<내-레포명>.git
+   cd <내-레포명>
+   cp .env.example .env
+   docker-compose up --build
+   ```
+
+`git clone`으로 원본 레포를 먼저 받은 경우에는 아래 방식으로 내 레포에 연결할 수 있습니다.
+
 1. GitHub에서 빈 레포를 새로 생성합니다.
    - 예: `my-oliveyoung-project`
    - README, `.gitignore`, license는 생성하지 않는 것을 권장합니다.
